@@ -46,7 +46,7 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Incasation</servlet-name>
-        <url-pattern>/Incasation</url-pattern>
+        <url-pattern>/ChekIncasation</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
