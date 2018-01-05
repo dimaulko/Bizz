@@ -114,37 +114,45 @@ public class EJBEnterprise {
 
     public Pair<String, ErrorResponse> incasationChek(String IMEI, String enterpriseId) {
         ArrayList<Enterprise> listEnterprises = new ArrayList<>();
-        if (!enterpriseId.isEmpty()) { // single version
+        if (enterpriseId != null && !enterpriseId.isEmpty()) { // single version
             Enterprise temp = dAOEnterprise.getByFoursqaureId(enterpriseId);
-            if (temp != null) {
+            if (temp == null) {
+                return new Pair<>(null, new ErrorResponse("This enterprise not found"));
+            } else if (!temp.getHolder().equals(IMEI)) {
+                return new Pair<>(null, new ErrorResponse("This enterprise is not you're :)"));
+            } else {
                 listEnterprises.add(temp);
             }
         } else {
             listEnterprises.addAll(dAOEnterprise.getEnterpriseList(IMEI));
         }
-        long now = UtilTime.getTimeStamp();
-        System.out.println("NOW: " + String.valueOf(now));
-        AccountDB accountDB = dAOAccount.getAccountByIMEI(IMEI);
-        System.out.println("NOW: " + accountDB.toString());
-        MODELImprovementIncasation incasation = dAOImprovementIncasation.getImprovmentIncasation(accountDB.getImprovementTimeIncasation(), accountDB.getLevel() + 1);
-        System.out.println("NOW: " + incasation.toString());
-        long maxIncasationTime = UtilTime.getSecondsFromHours(incasation.getLimit());
-        long userCanIncasate = 0;
-        long timeNow = UtilTime.getTimeStamp();
-        for (Enterprise enterprise : listEnterprises) {
-            if (timeNow - enterprise.getIncasation() > maxIncasationTime) {
-                userCanIncasate += (long) (((enterprise.getBought() * ENTERPRISE_PROFIT_COEF) / UtilTime.SECONDS_IN_DAY) * maxIncasationTime);
-            } else {
-                userCanIncasate += (long) ((((enterprise.getBought() * ENTERPRISE_PROFIT_COEF) / UtilTime.SECONDS_IN_DAY) * (timeNow - enterprise.getIncasation())));
+        if (!listEnterprises.isEmpty()) {
+            long now = UtilTime.getTimeStamp();
+            System.out.println("NOW: " + String.valueOf(now));
+            AccountDB accountDB = dAOAccount.getAccountByIMEI(IMEI);
+            System.out.println("NOW: " + accountDB.toString());
+            MODELImprovementIncasation incasation = dAOImprovementIncasation.getImprovmentIncasation(accountDB.getImprovementTimeIncasation(), accountDB.getLevel() + 1);
+            System.out.println("NOW: " + incasation.toString());
+            long maxIncasationTime = UtilTime.getSecondsFromHours(incasation.getLimit());
+            long userCanIncasate = 0;
+            long timeNow = UtilTime.getTimeStamp();
+            for (Enterprise enterprise : listEnterprises) {
+                if (timeNow - enterprise.getIncasation() > maxIncasationTime) {
+                    userCanIncasate += (long) (((enterprise.getBought() * ENTERPRISE_PROFIT_COEF) / UtilTime.SECONDS_IN_DAY) * maxIncasationTime);
+                } else {
+                    userCanIncasate += (long) ((((enterprise.getBought() * ENTERPRISE_PROFIT_COEF) / UtilTime.SECONDS_IN_DAY) * (timeNow - enterprise.getIncasation())));
+                }
             }
-        }
-        // chek if enter in balance range
-        MODELImprovementBalance balance = dAOImprovementBalance.getImprovmentBalance(accountDB.getImprovementBalance(), accountDB.getImprovementBalance());
-        long subtract = balance.getLimit() - accountDB.getBalance() - userCanIncasate;
-        if (subtract < 0) {
-            return new Pair<>(null, new ErrorResponse("You well lost" + subtract));
-        }
+            // chek if enter in balance range
+            MODELImprovementBalance balance = dAOImprovementBalance.getImprovmentBalance(accountDB.getImprovementBalance(), accountDB.getImprovementBalance());
+            long subtract = balance.getLimit() - accountDB.getBalance() - userCanIncasate;
+            if (subtract < 0) {
+                return new Pair<>(null, new ErrorResponse("You well lost" + subtract));
+            }
 
-        return new Pair<>("You can incasate: " + userCanIncasate, null);
+            return new Pair<>("You can incasate: " + userCanIncasate, null);
+        } else {
+            return new Pair<>(null, new ErrorResponse("Maybe you don't have enterprises yet"));
+        }
     }
 }

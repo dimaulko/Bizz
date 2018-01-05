@@ -45,12 +45,12 @@ public class CheckIncasation extends HttpServlet {
             throws ServletException, IOException {
         try (PrintWriter out = response.getWriter()) {
             if (prepare(request, response)) {
-                Pair<String, ErrorResponse> responseEJB = eJBEnterprise.incasationChek(request.getHeader(Constants.ServletConstant.IMEI), "58f094d335f98340efe30bf3");
-                if(responseEJB.getValue()!=null){
+                Pair<String, ErrorResponse> responseEJB = eJBEnterprise.incasationChek(request.getHeader(Constants.ServletConstant.IMEI),
+                        request.getParameter(Constants.ParameterRequestConstant.ENTERPRISE_ID));
+                if (responseEJB.getValue() != null) {
                     response.setStatus(HTTPStatuses.ERROR_RESPONSE_CODE);
                     out.println(new Gson().toJson(responseEJB.getValue()));
-                }
-                else{
+                } else {
                     out.println(new Gson().toJson(responseEJB.getKey()));
                 }
             }
