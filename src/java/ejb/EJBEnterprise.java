@@ -115,6 +115,7 @@ public class EJBEnterprise {
     public Pair<String, ErrorResponse> incasationChek(String IMEI, String enterpriseId) {
         ArrayList<Enterprise> listEnterprises = new ArrayList<>();
         if (enterpriseId != null && !enterpriseId.isEmpty()) { // single version
+            
             Enterprise temp = dAOEnterprise.getByFoursqaureId(enterpriseId);
             if (temp == null) {
                 return new Pair<>(null, new ErrorResponse("This enterprise not found"));
