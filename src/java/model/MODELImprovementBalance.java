@@ -17,13 +17,13 @@ public class MODELImprovementBalance {
     private int id;
     private int level;
     private int subLevel;
-    private int limit;
+    private long limit;
     private int price;
 
     public MODELImprovementBalance() {
     }
 
-    public MODELImprovementBalance(int id, int level, int subLevel, int limit, int price) {
+    public MODELImprovementBalance(int id, int level, int subLevel, long limit, int price) {
         this.id = id;
         this.level = level;
         this.subLevel = subLevel;
@@ -55,11 +55,11 @@ public class MODELImprovementBalance {
         this.subLevel = subLevel;
     }
 
-    public int getLimit() {
+    public long getLimit() {
         return limit;
     }
 
-    public void setLimit(int limit) {
+    public void setLimit(long limit) {
         this.limit = limit;
     }
 

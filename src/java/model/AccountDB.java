@@ -14,7 +14,7 @@ public class AccountDB {
     private String IMEI;
     private ProfileDB profile;
     private int level;
-    private int balance;
+    private long balance;
     private int enterpriseCount;
     private long createdAt;
     private long lastEnter;
@@ -55,11 +55,11 @@ public class AccountDB {
         this.level = level;
     }
 
-    public int getBalance() {
+    public long getBalance() {
         return balance;
     }
 
-    public void setBalance(int balance) {
+    public void setBalance(long balance) {
         this.balance = balance;
     }
 

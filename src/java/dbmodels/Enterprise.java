@@ -14,7 +14,7 @@ public class Enterprise {
     private String id;
     private Location location = new Location();
     private String name;
-    private int bought;
+    private long bought;
     private String holder;
     private long createdAt;
     private long incasation;
@@ -59,11 +59,11 @@ public class Enterprise {
         return "Enterprise{" + "id=" + id + ", location=" + location + ", name=" + name + ", bought=" + bought + ", holder=" + holder + ", createdAt=" + createdAt + ", incasation=" + incasation + '}';
     }
 
-    public int getBought() {
+    public long getBought() {
         return bought;
     }
 
-    public void setBought(int bought) {
+    public void setBought(long bought) {
         this.bought = bought;
     }
 

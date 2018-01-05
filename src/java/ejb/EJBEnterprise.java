@@ -135,8 +135,9 @@ public class EJBEnterprise {
         }
         // chek if enter in balance range
         MODELImprovementBalance balance = dAOImprovementBalance.getImprovmentBalance(accountDB.getImprovementBalance(), accountDB.getImprovementBalance());
-        if (balance.getLimit() < (accountDB.getBalance() + userCanIncasate)) {
-
+        long subtract = balance.getLimit() - accountDB.getBalance() - userCanIncasate;
+        if (subtract > 0) {
+            return new Pair<>(null, new ErrorResponse("You well lost"));
         }
         return null;
     }

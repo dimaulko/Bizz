@@ -21,7 +21,6 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 import model.AccountDB;
 import model.LatLong;
-import model.ProfileDB;
 import util.SQLStatements;
 import util.UtilTime;
 
@@ -47,7 +46,7 @@ public class DAOAccount {
             mPreparedStatement = conn.prepareStatement(SQLStatements.CREATE_ACCOUNT, Statement.RETURN_GENERATED_KEYS);
             mPreparedStatement.setString(1, accountDB.getIMEI());
             mPreparedStatement.setInt(2, 0);
-            mPreparedStatement.setInt(3, accountDB.getBalance());
+            mPreparedStatement.setLong(3, accountDB.getBalance());
             mPreparedStatement.setInt(4, 0);
             mPreparedStatement.setString(5, String.valueOf(time));
             mPreparedStatement.setString(6, String.valueOf(time));
@@ -253,7 +252,7 @@ public class DAOAccount {
         }
     }
 
-    public String editBalance(String IMEI, int count) {
+    public String editBalance(String IMEI, long count) {
         Connection conn = null;
         PreparedStatement mPreparedStatement = null;
         ResultSet rs = null;
@@ -262,7 +261,7 @@ public class DAOAccount {
             DataSource ds = (DataSource) ctx.lookup("jndi/bizz");
             conn = ds.getConnection();
             mPreparedStatement = conn.prepareStatement(SQLStatements.EDIT_BALANCE, Statement.RETURN_GENERATED_KEYS);
-            mPreparedStatement.setInt(1, count);
+            mPreparedStatement.setLong(1, count);
             mPreparedStatement.setString(2, IMEI);
             int editedRows = mPreparedStatement.executeUpdate();
             if (editedRows > 0) {
