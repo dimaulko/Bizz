@@ -27,7 +27,7 @@ import util.SQLStatements;
 @Stateless
 public class DAOImprovementIncasation {
 
-    public MODELImprovementIncasation getImprovmentEnterprise(int subLevel, int level) {
+    public MODELImprovementIncasation getImprovmentIncasation(int subLevel, int level) {
         Connection conn = null;
         PreparedStatement mPreparedStatement = null;
         ResultSet rs = null;

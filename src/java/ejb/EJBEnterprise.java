@@ -7,6 +7,7 @@ package ejb;
 
 import DAO.DAOAccount;
 import DAO.DAOEnterprise;
+import DAO.DAOImprovementBalance;
 import DAO.DAOImprovementEnterprise;
 import DAO.DAOImprovementIncasation;
 import dbmodels.Enterprise;
@@ -16,6 +17,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import model.AccountDB;
 import model.AccountGeneral;
+import model.MODELImprovementBalance;
 import model.MODELImprovementEnterprise;
 import model.MODELImprovementIncasation;
 import model.response.ErrorResponse;
@@ -27,6 +29,9 @@ import util.UtilTime;
  */
 @Stateless
 public class EJBEnterprise {
+
+    @EJB
+    private DAOImprovementBalance dAOImprovementBalance;
 
     public static final double ENTERPRISE_PROFIT_COEF = 0.2;
     @EJB
@@ -102,7 +107,7 @@ public class EJBEnterprise {
         return new Pair<>(acc, null);
     }
 
-    public void incasationChek(String IMEI, String enterpriseId) {
+    public Pair<AccountGeneral, ErrorResponse> incasationChek(String IMEI, String enterpriseId) {
         ArrayList<Enterprise> listEnterprises = new ArrayList<>();
         if (!enterpriseId.isEmpty()) { // single version
             Enterprise temp = dAOEnterprise.getByFoursqaureId(enterpriseId);
@@ -116,7 +121,7 @@ public class EJBEnterprise {
         System.out.println("NOW: " + String.valueOf(now));
         AccountDB accountDB = dAOAccount.getAccountByIMEI(IMEI);
         System.out.println("NOW: " + accountDB.toString());
-        MODELImprovementIncasation incasation = dAOImprovementIncasation.getImprovmentEnterprise(accountDB.getImprovementTimeIncasation(), accountDB.getLevel() + 1);
+        MODELImprovementIncasation incasation = dAOImprovementIncasation.getImprovmentIncasation(accountDB.getImprovementTimeIncasation(), accountDB.getLevel() + 1);
         System.out.println("NOW: " + incasation.toString());
         long maxIncasationTime = UtilTime.getSecondsFromHours(incasation.getLimit());
         long userCanIncasate = 0;
@@ -125,8 +130,14 @@ public class EJBEnterprise {
             if (timeNow - enterprise.getIncasation() < maxIncasationTime) {
                 userCanIncasate += (long) (((enterprise.getBought() * ENTERPRISE_PROFIT_COEF) / UtilTime.SECONDS_IN_DAY) * maxIncasationTime);
             } else {
-                userCanIncasate += (long) (((enterprise.getBought() * ENTERPRISE_PROFIT_COEF) / UtilTime.SECONDS_IN_DAY) * timeNow - enterprise.getIncasation());
+                userCanIncasate += (long) (((enterprise.getBought() * ENTERPRISE_PROFIT_COEF) / UtilTime.SECONDS_IN_DAY) * (timeNow - enterprise.getIncasation()));
             }
         }
+        // chek if enter in balance range
+        MODELImprovementBalance balance = dAOImprovementBalance.getImprovmentBalance(accountDB.getImprovementBalance(), accountDB.getImprovementBalance());
+        if (balance.getLimit() < (accountDB.getBalance() + userCanIncasate)) {
+
+        }
+        return null;
     }
 }
