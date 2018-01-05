@@ -99,7 +99,12 @@ public class EJBEnterprise {
         if (accountDB.getBalance() < enterprise.getBought()) {
             return new Pair<>(null, new ErrorResponse("Youre balance is less then Bought of enterprise"));
         }
+        long time = UtilTime.getTimeStamp();
+        System.out.println("TIME: " + time);
         enterprise.setHolder(accountDB.getIMEI());
+        enterprise.setCreatedAt(time);
+        enterprise.setIncasation(time);
+
         dAOEnterprise.create(enterprise);
         dAOAccount.editEnterpriseCount(IMEI, accountDB.getEnterpriseCount() + 1);
         dAOAccount.editBalance(IMEI, accountDB.getBalance() - enterprise.getBought());
@@ -127,10 +132,10 @@ public class EJBEnterprise {
         long userCanIncasate = 0;
         long timeNow = UtilTime.getTimeStamp();
         for (Enterprise enterprise : listEnterprises) {
-            if (timeNow - enterprise.getIncasation() < maxIncasationTime) {
+            if (timeNow - enterprise.getIncasation() > maxIncasationTime) {
                 userCanIncasate += (long) (((enterprise.getBought() * ENTERPRISE_PROFIT_COEF) / UtilTime.SECONDS_IN_DAY) * maxIncasationTime);
             } else {
-                userCanIncasate += (long) (((enterprise.getBought() * ENTERPRISE_PROFIT_COEF) / UtilTime.SECONDS_IN_DAY) * (timeNow - enterprise.getIncasation()));
+                userCanIncasate += (long) ((((enterprise.getBought() * ENTERPRISE_PROFIT_COEF) / UtilTime.SECONDS_IN_DAY) * (timeNow - enterprise.getIncasation())));
             }
         }
         // chek if enter in balance range
@@ -140,6 +145,6 @@ public class EJBEnterprise {
             return new Pair<>(null, new ErrorResponse("You well lost" + subtract));
         }
 
-        return new Pair<>("You can incasate: " + subtract, null);
+        return new Pair<>("You can incasate: " + userCanIncasate, null);
     }
 }

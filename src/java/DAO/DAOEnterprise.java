@@ -21,6 +21,7 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 import model.enterprise.EnterpriseIncome;
 import util.SQLStatements;
+import util.UtilTime;
 
 /**
  *
@@ -208,7 +209,7 @@ public class DAOEnterprise {
             DataSource ds = (DataSource) ctx.lookup("jndi/bizz");
             conn = ds.getConnection();
             System.out.println("EN: " + enterprise.toString());
-            long time = System.currentTimeMillis();
+            long time = UtilTime.getTimeStamp();
             mPreparedStatement = conn.prepareStatement(SQLStatements.CREATE_ENTERPRISE, Statement.RETURN_GENERATED_KEYS);
             mPreparedStatement.setString(1, enterprise.getId());
             mPreparedStatement.setDouble(2, enterprise.getLocation().getLat());
