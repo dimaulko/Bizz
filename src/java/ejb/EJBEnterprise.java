@@ -122,8 +122,10 @@ public class EJBEnterprise {
         long userCanIncasate = 0;
         long timeNow = UtilTime.getTimeStamp();
         for (Enterprise enterprise : listEnterprises) {
-            if (timeNow - enterprise.getIncasation() > maxIncasationTime) {
+            if (timeNow - enterprise.getIncasation() < maxIncasationTime) {
                 userCanIncasate += (long) (((enterprise.getBought() * ENTERPRISE_PROFIT_COEF) / UtilTime.SECONDS_IN_DAY) * maxIncasationTime);
+            } else {
+                userCanIncasate += (long) (((enterprise.getBought() * ENTERPRISE_PROFIT_COEF) / UtilTime.SECONDS_IN_DAY) * timeNow - enterprise.getIncasation());
             }
         }
     }
