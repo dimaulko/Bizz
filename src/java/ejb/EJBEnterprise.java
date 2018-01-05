@@ -107,7 +107,7 @@ public class EJBEnterprise {
         return new Pair<>(acc, null);
     }
 
-    public Pair<AccountGeneral, ErrorResponse> incasationChek(String IMEI, String enterpriseId) {
+    public Pair<String, ErrorResponse> incasationChek(String IMEI, String enterpriseId) {
         ArrayList<Enterprise> listEnterprises = new ArrayList<>();
         if (!enterpriseId.isEmpty()) { // single version
             Enterprise temp = dAOEnterprise.getByFoursqaureId(enterpriseId);
@@ -136,9 +136,10 @@ public class EJBEnterprise {
         // chek if enter in balance range
         MODELImprovementBalance balance = dAOImprovementBalance.getImprovmentBalance(accountDB.getImprovementBalance(), accountDB.getImprovementBalance());
         long subtract = balance.getLimit() - accountDB.getBalance() - userCanIncasate;
-        if (subtract > 0) {
-            return new Pair<>(null, new ErrorResponse("You well lost"));
+        if (subtract < 0) {
+            return new Pair<>(null, new ErrorResponse("You well lost" + subtract));
         }
-        return null;
+
+        return new Pair<>("You can incasate: " + subtract, null);
     }
 }

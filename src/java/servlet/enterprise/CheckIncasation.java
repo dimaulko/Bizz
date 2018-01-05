@@ -5,16 +5,20 @@
  */
 package servlet.enterprise;
 
+import com.google.gson.Gson;
 import ejb.EJBEnterprise;
 import ejb.ValidateRequest;
 import java.io.IOException;
 import java.io.PrintWriter;
+import javafx.util.Pair;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.Constants;
+import model.response.ErrorResponse;
+import util.HTTPStatuses;
 
 /**
  *
@@ -41,7 +45,14 @@ public class CheckIncasation extends HttpServlet {
             throws ServletException, IOException {
         try (PrintWriter out = response.getWriter()) {
             if (prepare(request, response)) {
-                eJBEnterprise.incasationChek(request.getHeader(Constants.ServletConstant.IMEI), "58f094d335f98340efe30bf3");
+                Pair<String, ErrorResponse> responseEJB = eJBEnterprise.incasationChek(request.getHeader(Constants.ServletConstant.IMEI), "58f094d335f98340efe30bf3");
+                if(responseEJB.getValue()!=null){
+                    response.setStatus(HTTPStatuses.ERROR_RESPONSE_CODE);
+                    out.println(new Gson().toJson(responseEJB.getValue()));
+                }
+                else{
+                    out.println(new Gson().toJson(responseEJB.getKey()));
+                }
             }
         }
     }
